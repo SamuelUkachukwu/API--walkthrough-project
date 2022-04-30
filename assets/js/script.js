@@ -16,10 +16,28 @@ async function postForm(e) {
     });
     const data = await response.json();
     if (response.ok) {
-        console.log(data)
+        displayError(data);
     } else {
         throw new Error(data.error);
     };
+}
+
+function displayError(data){
+    let heading = `JSHint result for ${data.file}`;
+
+    if (data.total_errors === 0){
+        results = `<di class="no_errors">No errors Reported!</di></di>`
+    }else{
+        results = `<di>Total Errors <span class="error_count">${data.total_errors}</span></di>`;
+        for(let error of data.error_list){
+            results += `<div>At line <span class="line">${error.line}</span>`;
+            results += ` column <span class="column">${error.col}</span></div>`;
+            results += `<div class="error">${error.error}</div>`;
+        }
+    }
+    document.getElementById('resultsModalTitle').innerText = heading;
+    document.getElementById('results-content').innerHTML = results;
+    resultsModal.show();
 }
 
 async function getStatus() {
